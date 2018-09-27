@@ -1,0 +1,1 @@
+function out = r2d(in);% Syntax: degrees = r2d(radians)% % Converts radians to degrees.%% Greg Balco -- UW Cosmogenic Nuclide Lab% March, 2006out = (in*360)/(2*pi);
