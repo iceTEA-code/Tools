@@ -1,0 +1,4 @@
+iceTEA - Tools for Exposure Ages
+Developed by Richard Selwyn Jones
+
+Version 0.5
