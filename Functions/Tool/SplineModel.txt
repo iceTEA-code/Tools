@@ -1,0 +1,58 @@
+model {
+  for(i in 1:N)
+  {
+  # observed y centered on true y with sd sigma.y
+  y[i] ~ dnorm(muy[i],tauy[i]) 
+  # observed x is centered on true x with sd sigma.x
+  x[i] ~ dnorm(x0[i],taux[i]) 
+  
+  
+  # true y is a spline function of true x
+  muy[i]<-inprod(Bik[i,],betak) 
+
+  # components of the basis function
+  for(j in 1:nknots){
+  J[i,j]<-step(x0[i]-knots[j])
+  L[i,j]<-((x0[i]-knots[j])^deg)*J[i,j]
+  }# end j loop
+  
+  # uninformative prior for true x
+  x0[i]~dnorm(0,0.01)
+  
+  # Precision parameters (1/var)
+  tauy[i]<-1/(pow(sigmay[i],2)+pow(nuy,2))
+  taux[i]<-pow(sigmax[i],-2)
+  } # end i loop 
+  
+  nuy~dunif(0,1)
+  # basis functions of x0 (true x)
+  Bik <- pow(-1,(deg + 1)) * (L %*% t(D))
+  
+  # Spline parameters (coefficients and smoothness)
+  for (k in 2:K) {
+  betak[k]<-deltak[k]+betak[k-1]
+  # Delta controls the smoothness
+  # Constraint [T(0,)] imposed on delta so that elevation must decrease over time
+  deltak[k]~dnorm(0,taudelta)T(,0)
+  }# end k loop
+  
+  ## Priors for spline parameters ##
+  betak[1] ~ dnorm(0, 0.01) # we need a prior on the first beta (uninformative)
+  taudelta<-pow(sigmadelta,-2)
+  sigmadelta ~ dt(0, 2^-2, 1)T(0,)
+  betad~dnorm(0,0.01)
+  
+  # Create predictions using xstar
+  for(l in 1:ngrid)
+  {
+  muypred[l]<-inprod(Bstarik[l,],betak)
+  for(j in 1:nknots)
+  {
+  Jstar[l,j]<-step(xstar[l]-knots[j])
+  Lstar[l,j]<-((xstar[l]-knots[j])^deg)*Jstar[l,j]
+  }
+  }# end l loop
+  # basis functions for xstar
+  Bstarik <- pow(-1,(deg + 1)) * (Lstar %*% t(D))
+  
+}
