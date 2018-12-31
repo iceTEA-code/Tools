@@ -56,8 +56,8 @@
 clear % Start fresh
 addpath(genpath(pwd))
 
-data_name = 'MGMMm_input_data.xlsx';%'example_moraine_input.xlsx';  % File name used for sample data
-ages_name = 'MGMMm';%'example_moraine';  % Name of dataset to be used to save calculated ages (_ages.mat)
+data_name = 'example_moraine_input.xlsx';  % File name used for sample data
+ages_name = 'example_moraine';  % Name of dataset to be used to save calculated ages (_ages.mat)
 
 % Load sample data
 sample_data = get_data(data_name);
@@ -100,7 +100,7 @@ load(load_name);
 
 % Plot settings
 feature = 1;    % Data from single feature?  yes = 1, no = 0
-save_plot = 1;  % Save plot?  1 to save as .png and .eps, otherwise 0
+save_plot = 0;  % Save plot?  1 to save as .png and .eps, otherwise 0
 mask = [];      % Select samples to plot (default is all)
 time_lim = [];  % Optionally set x-axis limits (in ka)
 weighted = [];  % Optionally select weighted (1) or unweighted (0) mean and standard deviation (default is weighted)
@@ -134,7 +134,7 @@ load(load_name);
 
 % Plot settings
 transect_type = 'vert'; % SET as 'vert' or 'horiz'
-save_plot = 1;  % Save plot?  1 to save as .png and .eps, otherwise 0
+save_plot = 0;  % Save plot?  1 to save as .png and .eps, otherwise 0
 mask = [];      % Select samples to plot (default is all)
 time_lim = [0 12];  % Optionally set limits of time axis (in ka)
 pos_lim = [];   % Optionally set limits of relative position axis (in m or km)
