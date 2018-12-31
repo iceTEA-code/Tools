@@ -53,7 +53,7 @@ function ages_ka = age_calc(sample_data,scaling_model,plot_prod)
       ages_ka.Be10 = NaN(length(sample_data.CC(:,1)),3);
       for a = 1:nnz(sample_data.logical_10)
           [output,times,plotprod,~] = be10age_mod(sample_data.CC(a,:),sample_data.CC_uncert(a,:),scaling); % Full calculation with uncertainties
-          age(a,:) = output([1,2,12],:)';
+          age(a,:) = output([1,12,2],:)';
           prod_time{a} = [(0-times)',plotprod']; % Save production information (converting time to ka BP)
       end
       ages_ka.Be10(sample_data.logical_10,:) = age(sample_data.logical_10,:);
@@ -67,7 +67,7 @@ function ages_ka = age_calc(sample_data,scaling_model,plot_prod)
       ages_ka.Al26 = NaN(length(sample_data.CC(:,1)),3);
       for a = 1:nnz(sample_data.logical_26)
           [output,times,plotprod,~] = al26age_mod(sample_data.CC(a,:),sample_data.CC_uncert(a,:),scaling); % Full calculation with uncertainties
-          age(a,:) = output([1,2,12],:)';
+          age(a,:) = output([1,12,2],:)';
           prod_time{a} = [(0-times)',plotprod'];
       end
       ages_ka.Al26(sample_data.logical_26,:) = age(sample_data.logical_26,:);
@@ -89,6 +89,7 @@ function ages_ka = age_calc(sample_data,scaling_model,plot_prod)
   ages_ka.elevation_err = sample_data.CC_uncert(:,3)';
   ages_ka.position = sample_data.position;
   ages_ka.scaling_model = scaling_model;
+  ages_ka.attenuation = sample_data.CC(:,13)';
   ages_ka.NN = NN;
   
   disp('done.')
