@@ -47,15 +47,17 @@
 clear % Start fresh
 addpath(genpath(pwd))
 
-data_name = 'example_thinningtransect_input.xlsx'; % File name used for sample data
-ages_name = 'example_thinningtransect';  % Name of dataset to be used to save calculate ages (_ages.mat)
-
-% Load sample data
-sample_data = get_data(data_name);
+ages_name = 'example_thinningtransect';  % Name of dataset (_ages.mat) - used to save/load exposure age data
 
 
 %% Get Calculated Ages from Input Data
 
+data_name = 'example_thinningtransect_input.xlsx'; % File name used for sample data
+
+% Load sample data
+sample_data = get_data(data_name);
+
+% Extract ages
 ages_ka = get_ages(sample_data,ages_name);
 
 % Save ages to file
@@ -65,6 +67,7 @@ save(save_name,'ages_ka'); % Comment out line to avoid saving
 
 %% Plot Ages as Kernel Density Estimates
 
+% Load data
 load_name = strcat(ages_name,'_ages.mat');
 load(load_name);
 
@@ -81,22 +84,27 @@ plot_kernel(ages_ka,feature,save_plot,mask,time_lim,weighted);
 
 %% Remove Outliers and Re-plot Ages
 
-feature = 0; % Data from single feature?  yes = 1, no = 0
+% Load data
+load_name = strcat(ages_name,'_ages.mat');
+load(load_name);
 
 % Find and remove outliers (generalised ESD test)
+feature = 1;
 sig = [];    % Optionally set significance level (default is 0.05)
 new_ages_ka = find_outliers(ages_ka,feature,sig);
 
 % Plot figure
-save_plot = 0;  % Save plot?  1 to save as .png and .eps, otherwise 0
-mask = [];      % Select samples to plot (default is all)
-time_lim = [];  % Optionally set x-axis limits (in ka)
-weighted = [];  % Optionally select weighted (1) or unweighted (0) mean and standard deviation (default is weighted)
-plot_kernel(new_ages_ka,feature,save_plot,mask,time_lim,weighted);
+plot_outliers = 1; % Also plot outliers?  yes = 1, no = 0
+save_plot = 0;     % Save plot?  1 to save as .png and .eps, otherwise 0
+mask = [];         % Select samples to plot (default is all)
+time_lim = [];     % Optionally set x-axis limits (in ka)
+weighted = [];     % Optionally select weighted (1) or unweighted (0) mean and standard deviation (default is weighted)
+plot_outlier_kernel(ages_ka,new_ages_ka,plot_outliers,feature,save_plot,mask,time_lim,weighted);
 
 
 %% Plot Ages as a Transect
 
+% Load data
 load_name = strcat(ages_name,'_ages.mat');
 load(load_name);
 
