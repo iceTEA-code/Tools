@@ -39,13 +39,10 @@
 %%
 
 clear % Start fresh
-addpath(genpath(pwd))
+addpath(genpath(pwd));
 
 data_name = 'example_moraine_input.xlsx';  % File name used for sample data
-ages_name = 'example_cover';  % Name of dataset to be used to save corrected data (e.g. _ages.mat)
-
-% SET scaling model
-scaling_model = 'LSD';  % 'DE','DU','LI','ST','LM','LSD','LSDn'
+ages_name = 'example_cover';  % Name of dataset to be used to save corrected data (e.g. _corr.mat)
 
 % SET surface cover correction
 cover_type = 'snow';  % Select 'snow', 'freshwater', 'seawater', 'loess', 'till', 'soil', 'ash', or 'manual'
@@ -54,18 +51,26 @@ cover_density = 1.6;  % If 'manual', set density of surface cover (g/cm^3)
 cover_depth = 20;     % Select depth of surface cover (cm)
 
 
+% Calculate cover-corrected exposure ages?
+calc_age = 0; % 1=yes, 0=no
+scaling_model = 'LSD';  % Select scaling model - 'DE','DU','LI','ST','LM','LSD','LSDn'
+
+
+%% Calculate Shielding Factors and Exposure Ages Corrected for Surface Cover
+
 % Load sample data
 sample_data = get_data(data_name);
 
-
-%% Calculate Exposure Ages Corrected for Surface Cover
-
 % Perform correction
-corr_ages_ka = cov_correct(sample_data,scaling_model,cover_type,cover_depth,cover_density);
+cover_corr_data = cov_correct(sample_data,calc_age,cover_type,cover_depth,cover_density,scaling_model);
 
 % Save corrected data to file
-save_name = strcat(ages_name,'.mat');
-save(save_name,'corr_ages_ka');
+save_name = strcat(ages_name,'_corr.mat');
+save(save_name,'cover_corr_data');
+
+% Export results table of corrected exposure ages
+format = 'xls'; % SET export format - 'xls' or 'txt'
+export_coverages(sample_data,cover_corr_data,ages_name,format);
 
 
 %% Plot Corrected Ages as Kernel Density Estimates
@@ -78,6 +83,6 @@ time_lim = [];  % Optionally set x-axis limits (in ka)
 weighted = [];  % Optionally select weighted (1) or unweighted (0) mean and standard deviation (default is weighted)
 
 % Plot figure
-corr_ages_ka.ages_name = ages_name;
-plot_kernel(corr_ages_ka,feature,save_plot,mask,time_lim,weighted);
+cover_corr_data.ages_name = ages_name;
+plot_kernel(cover_corr_data,feature,save_plot,mask,time_lim,weighted);
 
