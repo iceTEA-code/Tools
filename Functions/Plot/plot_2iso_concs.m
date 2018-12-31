@@ -109,7 +109,7 @@ function iso_plot = plot_2iso_concs(sample_data,sigma,save_plot,concs_name,expo_
   t_expos = linspace(0,10e6,10000+1); % Time exposed (a) - 1a to 10Ma
   t_bur = linspace(0,1e7,200+1); % Burial time (a) - 1a to 100Ma
   
-  for k=1:length(t_expos) % THIS TAKES TOO LONG - MAKE MORE EFFICIENT
+  for k=1:length(t_expos) % Time consuming part
       be_conc(k) = (1./A_10) .* (1-exp(-1*A_10*t_expos(k)));
       al_conc(k) = (1./A_26) .* (1-exp(-1*A_26*t_expos(k)));
       for i=1:length(t_bur)
