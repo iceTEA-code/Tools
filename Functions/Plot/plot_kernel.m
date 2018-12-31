@@ -3,14 +3,14 @@
 % out = plot_kernel(ages_ka,feature,save_plot,mask)
 % out = plot_kernel(ages_ka,feature,save_plot,mask,x_lim,weight_type)
 %
-% Plots kernel density estimates for calculated exposure ages, separately
-% for each nuclide. The mode of the distribution, weighted mean and 
-% standard deviation, and reduced chi-squared with critical value are
-% computed if the ages are from the same feature.
+% Plots kernel density estimates for exposure ages, separately for each 
+% nuclide. The mode of the distribution, weighted mean and standard 
+% deviation, and reduced chi-squared with critical value are computed if 
+% the ages are from the same feature.
 %
 % ages_ka is a required struct, containing ages and uncertainties 
-% calculated using age_calc.m, and a logical of the nuclides that were 
-% measured.
+% calculated using age_calc.m or imported using get_ages.m, and a logical 
+% of the nuclides that were measured.
 %
 % feature should be a binary input of whether these ages come from a single
 % feature [1] or not [0].
@@ -146,6 +146,7 @@ function out = plot_kernel(ages_ka,feature,save_plot,mask,x_lim,weighted)
       set(h(end),'Color',col(1,:),'Linewidth',2,'Linestyle','-');
       ax=gca;
       YLim_max = ax.YLim(2);
+      XLim_min = ax.XLim(1);
       XLim_max = ax.XLim(2);
       if feature == 1
           mode_val = max(h(end).YData); % Get mode of summed distribution
@@ -164,7 +165,11 @@ function out = plot_kernel(ages_ka,feature,save_plot,mask,x_lim,weighted)
       if (nargin == 5 || ~isempty(x_lim))
           xlim(x_lim);
       else
-          xlim([0 XLim_max]);
+          if XLim_min < 0
+              xlim([0 XLim_max]);
+          else
+              xlim([XLim_min XLim_max]);
+          end
       end
       ax.XDir = 'reverse';
       box_dim = [0.15 0.70 0.19 0.2];
