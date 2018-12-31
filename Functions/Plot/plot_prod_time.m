@@ -49,6 +49,14 @@ function out = plot_prod_time(prod_input_1,save_plot,ages_name,y_lim,prod_input_
   if save_plot == 1 && (nargin < 3 || isempty(ages_name))
       error('plot_prod_time requires ages_name to save the figure');
   end
+  if strcmpi(prod_input_1.scaling_model,'SF')
+      scaling = 'LSD';
+  elseif strcmpi(prod_input_1.scaling_model,'SA')
+      scaling = 'LSDn';
+  else
+      scaling = prod_input_1.scaling_model;
+    end
+  
   matver = version('-date'); matver = str2num(matver(end-3:end)); % Check MATLAB version
   
 
@@ -95,7 +103,7 @@ function out = plot_prod_time(prod_input_1,save_plot,ages_name,y_lim,prod_input_
       end
       hold off;
       ax = gca;
-      summary_text = {strcat('{Nuclide: }',N_name),strcat('{Scaling model: }',num2str(prod_input_1.scaling_model))};
+      summary_text = {strcat('{Nuclide: }',N_name),strcat('{Scaling model: }',num2str(scaling))};
       if nargin > 4
           if matver > 2015
               title(leg,summary_text,'Color',col,'FontSize',10,'FontWeight','bold');
@@ -120,7 +128,7 @@ function out = plot_prod_time(prod_input_1,save_plot,ages_name,y_lim,prod_input_
       
       % Save figure
       if save_plot == 1
-          fig_name = strcat(ages_name,'_ProdVsTime_',N_name,'_',num2str(prod_input_1.scaling_model));
+          fig_name = strcat(ages_name,'_ProdVsTime_',N_name,'_',num2str(scaling));
           export_fig(fig_name,'-png','-r400'); % Save as a PNG (raster) file
           saveas(gcf,fig_name,'epsc'); % Save as a EPS (vector) file
       end
