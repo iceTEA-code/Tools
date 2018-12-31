@@ -128,12 +128,10 @@ function out = transect_regress_spline(ages_ka,transect_type,n_iter,mask)
       
       % Get data for nuclide; Mask; Convert from ka to yrs
       if N_ind == 1
-          N = 10;
           age_m = ages_ka.Be10(mask,1) * 1000;
           age_err = ages_ka.Be10(mask,3) * 1000;
           
       elseif N_ind == 2
-          N = 26;
           age_m = ages_ka.Al26(mask,1) * 1000;
           age_err = ages_ka.Al26(mask,3) * 1000;
       end
@@ -257,9 +255,9 @@ function out = transect_regress_spline(ages_ka,transect_type,n_iter,mask)
       reg.l95_pos = quantile(ypred,0.025);
       l95bck = fliplr(reg.l95_pos);
       xbck = fliplr(x_star);
-      plot.reg_time = [x_star,xbck];
-      plot.reg_pos68 = [reg.u68_pos,l68bck];
-      plot.reg_pos95 = [reg.u95_pos,l95bck];
+      plotting.reg_time = [x_star,xbck];
+      plotting.reg_pos68 = [reg.u68_pos,l68bck];
+      plotting.reg_pos95 = [reg.u95_pos,l95bck];
       
       
       % Calculate rate
@@ -271,8 +269,8 @@ function out = transect_regress_spline(ages_ka,transect_type,n_iter,mask)
       reg.l68_rate = [0 quantile(rate,0.16)];
       reg.u95_rate = [0 quantile(rate,0.975)];
       reg.l95_rate = [0 quantile(rate,0.025)];
-      plot.reg_rate68 = [reg.u68_rate,fliplr(reg.l68_rate)];
-      plot.reg_rate95 = [reg.u95_rate,fliplr(reg.l95_rate)];
+      plotting.reg_rate68 = [reg.u68_rate,fliplr(reg.l68_rate)];
+      plotting.reg_rate95 = [reg.u95_rate,fliplr(reg.l95_rate)];
       reg.yearsBP = x_star;
       
       
@@ -302,11 +300,11 @@ function out = transect_regress_spline(ages_ka,transect_type,n_iter,mask)
       if N_ind == 1
           out.N10.elev_ages = data_sorted;
           out.N10 = reg;
-          out.N10.plot_data = plot;
+          out.N10.plot_data = plotting;
       elseif N_ind == 2
           out.N26.elev_ages = data_sorted;
           out.N26 = reg;
-          out.N26.plot_data = plot;
+          out.N26.plot_data = plotting;
       end
       
   end
