@@ -56,8 +56,8 @@
 clear % Start fresh
 addpath(genpath(pwd))
 
-data_name = 'example_moraine_input.xlsx';  % File name used for sample data
-ages_name = 'example_moraine';  % Name of dataset to be used to save calculate ages (_ages.mat)
+data_name = 'MGMMm_input_data.xlsx';%'example_moraine_input.xlsx';  % File name used for sample data
+ages_name = 'MGMMm';%'example_moraine';  % Name of dataset to be used to save calculated ages (_ages.mat)
 
 % Load sample data
 sample_data = get_data(data_name);
@@ -88,6 +88,10 @@ end
 save_name = strcat(ages_name,'_ages.mat');
 save(save_name,'ages_ka');
 
+% Export results table
+format = 'xls'; % SET export format - 'xls' or 'txt'
+export_calcages(sample_data,ages_ka,ages_name,format);
+
 
 %% Plot Ages as Kernel Density Estimates
 
@@ -96,7 +100,7 @@ load(load_name);
 
 % Plot settings
 feature = 1;    % Data from single feature?  yes = 1, no = 0
-save_plot = 0;  % Save plot?  1 to save as .png and .eps, otherwise 0
+save_plot = 1;  % Save plot?  1 to save as .png and .eps, otherwise 0
 mask = [];      % Select samples to plot (default is all)
 time_lim = [];  % Optionally set x-axis limits (in ka)
 weighted = [];  % Optionally select weighted (1) or unweighted (0) mean and standard deviation (default is weighted)
@@ -107,18 +111,20 @@ plot_kernel(ages_ka,feature,save_plot,mask,time_lim,weighted);
 
 %% Remove Outliers and Re-plot Ages
 
-feature = 1; % Data from single feature?  yes = 1, no = 0
+% Data from single feature?
+feature = 1; % yes = 1, no = 0
 
 % Find and remove outliers (generalised ESD test)
 sig = []; % Optionally set significance level (default is 0.05)
 new_ages_ka = find_outliers(ages_ka,feature,sig);
 
 % Plot figure
+plot_outliers = 1; % Also plot outliers?  yes = 1, no = 0
 save_plot = 0;  % Save plot?  1 to save as .png and .eps, otherwise 0
 mask = [];      % Select samples to plot (default is all)
 time_lim = [];  % Optionally set x-axis limits (in ka)
 weighted = [];  % Optionally select weighted (1) or unweighted (0) mean and standard deviation (default is weighted)
-plot_kernel(ages_ka,feature,save_plot,mask,time_lim,weighted);
+plot_outlier_kernel(ages_ka,new_ages_ka,plot_outliers,feature,save_plot,mask,time_lim,weighted);
 
 
 %% Plot Ages as a Transect
@@ -128,9 +134,9 @@ load(load_name);
 
 % Plot settings
 transect_type = 'vert'; % SET as 'vert' or 'horiz'
-save_plot = 0;  % Save plot?  1 to save as .png and .eps, otherwise 0
+save_plot = 1;  % Save plot?  1 to save as .png and .eps, otherwise 0
 mask = [];      % Select samples to plot (default is all)
-time_lim = [];  % Optionally set limits of time axis (in ka)
+time_lim = [0 12];  % Optionally set limits of time axis (in ka)
 pos_lim = [];   % Optionally set limits of relative position axis (in m or km)
 
 % Plot figure
