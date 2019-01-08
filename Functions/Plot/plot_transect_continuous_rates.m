@@ -183,7 +183,7 @@ function out = plot_transect_continuous_rates(regress_out,ages_ka,transect_type,
       med = plot(N_rates.yearsBP/1000,N_rates.med_pos,'-','color',col_m,'LineWidth',1.5);
       
       if plot_ages == 1
-          if isfield(N_rates_plot,'reg_rate68')
+          if strcmp(regress_out,'spline')
               for a = 1:length(ages_errs(:,1))
                   this_age_low = ages_errs(a,1) - ages_errs(a,3);
                   this_age_upp = ages_errs(a,1) + ages_errs(a,3);
@@ -229,6 +229,9 @@ function out = plot_transect_continuous_rates(regress_out,ages_ka,transect_type,
       if any(isnan(reg_rates95))
           reg_time = reg_time(2:end-1);
           reg_rates95 = reg_rates95(2:end-1);
+          if isfield(N_rates_plot,'reg_rate68')
+              reg_rates68 = reg_rates68(2:end-1);
+          end
       end
       fill(reg_time/1000,reg_rates95*rate_factor,col_95,'EdgeColor','none','FaceAlpha',.5);
       if isfield(N_rates_plot,'reg_rate68')
