@@ -185,8 +185,8 @@ function out = plot_transect_continuous_rates(regress_out,ages_ka,transect_type,
       if plot_ages == 1
           if isfield(N_rates_plot,'reg_rate68')
               for a = 1:length(ages_errs(:,1))
-                  this_age_low = ages_errs(a,1) - ages_errs(a,2);
-                  this_age_upp = ages_errs(a,1) + ages_errs(a,2);
+                  this_age_low = ages_errs(a,1) - ages_errs(a,3);
+                  this_age_upp = ages_errs(a,1) + ages_errs(a,3);
                   this_pos_low = N_pos(a) - N_pos_err(a);
                   this_pos_upp = N_pos(a) + N_pos_err(a);
                   xx = [this_age_low this_age_low this_age_upp this_age_upp this_age_low];
@@ -260,7 +260,7 @@ function out = plot_transect_continuous_rates(regress_out,ages_ka,transect_type,
       
 
       % Save figure
-      %set(gcf,'renderer','Painters'); % Uncomment to export the individual regression lines - WARNING: this will produce a very large file
+      set(gcf,'renderer','Painters'); % Uncomment to export the individual regression lines - WARNING: this will produce a very large file
       if save_plot == 1
           fig_name = strcat(ages_ka.ages_name,'_Continuous_Rates_',N_name);
           export_fig(fig_name,'-png','-r300','-transparent'); % Save as a PNG (raster) file
