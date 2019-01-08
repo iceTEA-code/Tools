@@ -132,47 +132,66 @@ function out = transect_regress_fourier(ages_ka,transect_type,n_terms,mask)
       [fou_fit,gof,output] = fit(X,y,fourier_type);
       X_arr = round(min(X),-1):10:round(max(X),-1);
       fit_Y = fou_fit(X_arr);
-      level = 0.95; % 0.68, 0.95
       intopt = 'functional'; % 'observation','functional'
       simopt = 'off';
-      Y_bounds = predint(fou_fit,X_arr,level,intopt,simopt);
+%       level = 0.68;
+%       Y_bounds68 = predint(fou_fit,X_arr,level,intopt,simopt);
+      level = 0.95;
+      Y_bounds95 = predint(fou_fit,X_arr,level,intopt,simopt);
       
       % Smooth bounds
-      [fou_bounds,~,~] = fit(X_arr',Y_bounds(:,1),fourier_type);
-      Y_bounds(:,1) = fou_bounds(X_arr);
-      [fou_bounds,~,~] = fit(X_arr',Y_bounds(:,2),fourier_type);
-      Y_bounds(:,2) = fou_bounds(X_arr);
+%       [fou_bounds,~,~] = fit(X_arr',Y_bounds68(:,1),fourier_type);
+%       Y_bounds68(:,1) = fou_bounds(X_arr);
+%       [fou_bounds,~,~] = fit(X_arr',Y_bounds68(:,2),fourier_type);
+%       Y_bounds68(:,2) = fou_bounds(X_arr);
+      [fou_bounds,~,~] = fit(X_arr',Y_bounds95(:,1),fourier_type);
+      Y_bounds95(:,1) = fou_bounds(X_arr);
+      [fou_bounds,~,~] = fit(X_arr',Y_bounds95(:,2),fourier_type);
+      Y_bounds95(:,2) = fou_bounds(X_arr);
       
-      % Interpolate for yearly array
-      %yr_arr = min(X):1:max(X);
-      %fit_Y_yr = interp1(X_arr,fit_Y,yr_arr);
-      %Y_bounds_yr(:,1) = interp1(X_arr,Y_bounds(:,1),yr_arr);
-      %Y_bounds_yr(:,2) = interp1(X_arr,Y_bounds(:,2),yr_arr);
+%       % Interpolate for yearly array
+%       yr_arr = min(X):1:max(X);
+%       fit_Y_yr = interp1(X_arr,fit_Y,yr_arr);
+%       Y_bounds_yr(:,1) = interp1(X_arr,Y_bounds(:,1),yr_arr);
+%       Y_bounds_yr(:,2) = interp1(X_arr,Y_bounds(:,2),yr_arr);
       
       reg.med_pos = fit_Y'; %fit_Y_yr;
-      reg.u95_pos = Y_bounds(:,2)'; %Y_bounds_yr(:,2)';
-      reg.l95_pos = Y_bounds(:,1)'; %Y_bounds_yr(:,1)';    
+%       reg.u68_pos = Y_bounds68(:,2)';
+%       reg.l68_pos = Y_bounds68(:,1)';
+      reg.u95_pos = Y_bounds95(:,2)'; %Y_bounds_yr(:,2)';
+      reg.l95_pos = Y_bounds95(:,1)'; %Y_bounds_yr(:,1)';    
       
       % Sort analyis output     
-      l95bck = fliplr(reg.l95_pos);
       xbck = fliplr(X_arr); %yr_arr
+%       l68bck = fliplr(reg.l68_pos);
+      l95bck = fliplr(reg.l95_pos);
       plotting.reg_time = [X_arr,xbck]; %yr_arr
-      plotting.reg_pos95 = [reg.u95_pos,l95bck];     
+%       plotting.reg_pos68 = [reg.u68_pos,l68bck];
+      plotting.reg_pos95 = [reg.u95_pos,l95bck];
       
       % Calculate rate
       rate = diff(reg.med_pos)./diff(X_arr);
       med_rate = [NaN,rate];
-      upr_diff_scale = ((reg.u95_pos-reg.med_pos)./(std(reg.u95_pos-reg.med_pos)));
-      lwr_diff_scale = ((reg.med_pos-reg.l95_pos)./(std(reg.med_pos-reg.l95_pos)));
       rate_scale = med_rate./nanstd(med_rate);
-      rate_upr_scale = rate_scale + upr_diff_scale;
-      rate_lwr_scale = rate_scale - lwr_diff_scale;
-      rate_upr = rate_upr_scale*nanstd(med_rate);
-      rate_lwr = rate_lwr_scale*nanstd(med_rate);
+%       u68_diff_scale = ((reg.u68_pos-reg.med_pos)./(std(reg.u68_pos-reg.med_pos)));
+%       l68_diff_scale = ((reg.med_pos-reg.l68_pos)./(std(reg.med_pos-reg.l68_pos)));
+%       rate_u68_scale = rate_scale + u68_diff_scale;
+%       rate_l68_scale = rate_scale - l68_diff_scale;
+%       rate_u68 = rate_u68_scale*nanstd(med_rate);
+%       rate_l68 = rate_l68_scale*nanstd(med_rate);
+      u95_diff_scale = ((reg.u95_pos-reg.med_pos)./(std(reg.u95_pos-reg.med_pos)));
+      l95_diff_scale = ((reg.med_pos-reg.l95_pos)./(std(reg.med_pos-reg.l95_pos)));
+      rate_u95_scale = rate_scale + u95_diff_scale;
+      rate_l95_scale = rate_scale - l95_diff_scale;
+      rate_u95 = rate_u95_scale*nanstd(med_rate);
+      rate_l95 = rate_l95_scale*nanstd(med_rate);
       
       reg.med_rate = med_rate;
-      reg.u95_rate = rate_upr;
-      reg.l95_rate = rate_lwr;      
+%       reg.u68_rate = rate_u68;
+%       reg.l68_rate = rate_l68;
+      reg.u95_rate = rate_u95;
+      reg.l95_rate = rate_l95;
+%       plotting.reg_rate68 = [reg.u68_rate,fliplr(reg.l68_rate)];
       plotting.reg_rate95 = [reg.u95_rate,fliplr(reg.l95_rate)];
       reg.yearsBP = X_arr; %yr_arr
       
@@ -210,6 +229,7 @@ function out = transect_regress_fourier(ages_ka,transect_type,n_terms,mask)
       
   end
   
+  out.regress_type = 'fourier';
   disp('done.')
 
 end
