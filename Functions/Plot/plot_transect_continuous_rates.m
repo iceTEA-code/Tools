@@ -260,6 +260,7 @@ function out = plot_transect_continuous_rates(regress_out,ages_ka,transect_type,
       
 
       % Save figure
+      %set(gcf,'renderer','Painters'); % Uncomment to export the individual regression lines - WARNING: this will produce a very large file
       if save_plot == 1
           fig_name = strcat(ages_ka.ages_name,'_Continuous_Rates_',N_name);
           export_fig(fig_name,'-png','-r300','-transparent'); % Save as a PNG (raster) file
