@@ -309,6 +309,7 @@ function out = transect_regress_spline(ages_ka,transect_type,n_iter,mask)
       
   end
   
+  out.regress_type = 'spline';
   disp('done.')
 
 end
