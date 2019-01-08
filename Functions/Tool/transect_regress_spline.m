@@ -247,7 +247,7 @@ function out = transect_regress_spline(ages_ka,transect_type,n_iter,mask)
           x_star = -x_star*1000;
       end
       
-      reg.med_y = median(ypred);
+      reg.med_pos = median(ypred);
       reg.u68_pos = quantile(ypred,0.84);
       reg.l68_pos = quantile(ypred,0.16);
       l68bck = fliplr(reg.l68_pos);
