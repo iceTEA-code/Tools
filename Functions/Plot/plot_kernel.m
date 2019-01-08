@@ -102,7 +102,7 @@ function out = plot_kernel(ages_ka,feature,save_plot,mask,x_lim,weighted)
           if weighted == 1
               % Calculate weighted mean and standard deviation
               for b = 1:n_samples
-                  weights(b,1) = errs(b)/sum(errs);
+                  weights(b,1) = (1/errs(b)) / sum(1./errs);
               end
               age_mean = sum(ages.*weights);
               age_stdev = sqrt(var(ages,weights));
