@@ -167,7 +167,7 @@ function iso_plot = plot_2iso_concs(sample_data,sigma,save_plot,concs_name,expo_
       if sigma == 1
           h_e = ellipse(N10,dN10,N26,dN26,1);
           set(h_e,'Color',colour(1,:),'LineWidth',1,'LineStyle','-');
-          plot(N10,(N10./N26),'.','Color',colour(1,:));
+          plot(N10,(N26./N10),'.','Color',colour(1,:));
       else
           [h_e1,h_e2] = ellipse(N10,dN10,N26,dN26,2);
           set(h_e1,'Color',colour(1,:),'LineWidth',1,'LineStyle','-');
