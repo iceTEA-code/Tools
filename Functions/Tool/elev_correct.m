@@ -66,8 +66,8 @@ function out = elev_correct(sample_data,scaling_model,correction_type,elev_input
           elev_data.elev_change = zeros(1,length(time_arr));
           warning('Rate of elevation change is set to zero.');
       else
-          elev_data.elev_per_yr = elev_input/1000;
-          elev_data.elev_change = 0:t_interval*elev_change_rev:(max_age_ka*1000)*elev_change_rev;
+          elev_data.elev_per_yr = elev_change_rev/1000;
+          elev_data.elev_change = 0:t_interval*elev_data.elev_per_yr:(max_age_ka*1000)*elev_data.elev_per_yr;
       end
       
   elseif strcmpi(correction_type,'model')
