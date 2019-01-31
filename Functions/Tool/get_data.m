@@ -51,6 +51,9 @@ function sample_data = get_data(input_name)
       input_path = strcat(pwd,'/',input_name);
   end
   [~,~,ext] = fileparts(input_path);
+  if isempty(ext)
+      error('File name of sample data does not include the file type extension (e.g. .xlsx)')
+  end
 
   % Load input data
   if strcmpi(ext,'.xlsx') || strcmpi(ext,'.xls')
@@ -59,12 +62,16 @@ function sample_data = get_data(input_name)
           this_header = in_raw{1,a};
           strrow(a) = ~isnumeric(this_header);
       end
+      n_raw_columns = numel(in_raw(1,:));
+      if (n_raw_columns > 15) && all(~strrow(16:end)) % Remove any empty columns
+          in_raw = in_raw(:,1:15);
+      elseif (n_raw_columns > 22) && all(~strrow(23:end))
+          in_raw = in_raw(:,1:22);
+      end
       if all(strrow) % Remove header
           in_raw = in_raw(2:end,:); 
           in_txt = in_txt(2:end,:);
       end
-      n_raw_columns = numel(in_raw(1,:));
-      n_data_columns = numel(in_data(1,:));
   elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv')
       warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames')
       in_raw = table2cell(readtable(input_name));
@@ -82,9 +89,10 @@ function sample_data = get_data(input_name)
           end
       end
       in_data = in_data(:,2:end);
-      n_raw_columns = numel(in_raw(1,:));
-      n_data_columns = numel(in_data(1,:));
   end
+  
+  n_raw_columns = numel(in_raw(1,:));
+  n_data_columns = numel(in_data(1,:));
   
   % Check inputs
   if (n_raw_columns > 22)
