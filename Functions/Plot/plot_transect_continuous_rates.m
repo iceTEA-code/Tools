@@ -183,7 +183,7 @@ function out = plot_transect_continuous_rates(regress_out,ages_ka,transect_type,
       med = plot(N_rates.yearsBP/1000,N_rates.med_pos,'-','color',col_m,'LineWidth',1.5);
       
       if plot_ages == 1
-          if strcmp(regress_out,'spline')
+          if strcmp(regress_out.regress_type,'spline')
               for a = 1:length(ages_errs(:,1))
                   this_age_low = ages_errs(a,1) - ages_errs(a,3);
                   this_age_upp = ages_errs(a,1) + ages_errs(a,3);
@@ -252,7 +252,7 @@ function out = plot_transect_continuous_rates(regress_out,ages_ka,transect_type,
       if (nargin > 6 && ~isempty(rate_lim))
           ylim(rate_lim);
       else
-          ylim(ax2.YLim);
+          ylim([0,ax2.YLim(2)]);
       end
       ax2.XDir = 'reverse';
       ax2_height = 0.25; ax2.Position(4) = ax2_height;
