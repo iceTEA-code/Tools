@@ -89,7 +89,7 @@ function corr_out = cov_correct(sample_data,calc_age,cover_type,cover_depth,cove
           corr_out.Be10 = NaN(length(sample_data.CC(:,1)),3);
           for a = 1:nnz(sample_data.logical_10)
               [output,times,plotprod,~] = be10age_mod(sample_data.CC(a,:),sample_data.CC_uncert(a,:),scaling); % Full calculation with uncertainties
-              age(a,:) = output([1,2,12],:)';
+              age(a,:) = output([1,12,2],:)';
               prod_time{a} = [(0-times)',plotprod']; % Save production information (converting time to ka BP)
           end
           corr_out.Be10(sample_data.logical_10,:) = age(sample_data.logical_10,:);
@@ -101,7 +101,7 @@ function corr_out = cov_correct(sample_data,calc_age,cover_type,cover_depth,cove
           corr_out.Al26 = NaN(length(sample_data.CC(:,1)),3);
           for a = 1:nnz(sample_data.logical_26)
               [output,times,plotprod,~] = al26age_mod(sample_data.CC(a,:),sample_data.CC_uncert(a,:),scaling); % Full calculation with uncertainties
-              age(a,:) = output([1,2,12],:)';
+              age(a,:) = output([1,12,2],:)';
               prod_time{a} = [(0-times)',plotprod'];
           end
           corr_out.Al26(sample_data.logical_26,:) = age(sample_data.logical_26,:);
