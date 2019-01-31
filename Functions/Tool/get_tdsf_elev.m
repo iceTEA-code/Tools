@@ -198,7 +198,8 @@ end
     else % Elsewhere; Computed from ERA-40 reanalysis data
         pressure_tv = ERA40atm(sample.lat,sample.long,elevation_tv);
     end
-    
+    pressure_nan = isnan(pressure_tv); % Find any NaNs
+    pressure_tv(pressure_nan) = 0;
     
     % Do the age calculation. Interestingly, because all of the P(t)
     % functions are defined piecewise constant, it's not necessary to have
