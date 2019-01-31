@@ -45,6 +45,7 @@ function ages_ka = age_calc(sample_data,scaling_model,plot_prod)
 
   % Determine what nuclides are present
   NN = [any(sample_data.logical_10) any(sample_data.logical_26)];
+  ages_ka.NN = NN;
   
   
   % Calculate exposure ages
@@ -90,7 +91,6 @@ function ages_ka = age_calc(sample_data,scaling_model,plot_prod)
   ages_ka.position = sample_data.position;
   ages_ka.scaling_model = scaling_model;
   ages_ka.attenuation = sample_data.CC(:,13)';
-  ages_ka.NN = NN;
   
   disp('done.')
   
