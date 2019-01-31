@@ -57,8 +57,8 @@ function export_calcages(sample_data,ages_ka,out_name,format)
       end
       Be_data(:,1) = sample_names(logical_10);
       Be_data(:,3) = round(ages_ka.Be10(:,1)*1000,-1);
-      Be_data(:,4) = round(ages_ka.Be10(:,3)*1000,-1);
-      Be_data(:,5) = round(ages_ka.Be10(:,2)*1000,-1);
+      Be_data(:,4) = round(ages_ka.Be10(:,2)*1000,-1);
+      Be_data(:,5) = round(ages_ka.Be10(:,3)*1000,-1);
   end
   if any(logical_26)
       Al_data = string(zeros(nnz(logical_26),6));
@@ -68,8 +68,8 @@ function export_calcages(sample_data,ages_ka,out_name,format)
       end
       Al_data(:,1) = sample_names(logical_26);
       Al_data(:,3) = round(ages_ka.Al26(:,1)*1000,-1);
-      Al_data(:,4) = round(ages_ka.Al26(:,3)*1000,-1);
-      Al_data(:,5) = round(ages_ka.Al26(:,2)*1000,-1);
+      Al_data(:,4) = round(ages_ka.Al26(:,2)*1000,-1);
+      Al_data(:,5) = round(ages_ka.Al26(:,3)*1000,-1);
   end
   
   if any(logical_10) && ~any(logical_26)

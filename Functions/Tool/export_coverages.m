@@ -62,8 +62,8 @@ function export_coverages(sample_data,cover_corr_data,out_name,format)
           end
           Be_data(:,1) = sample_names(logical_10);
           Be_data(:,5) = round(cover_corr_data.Be10(:,1)*1000,-1);
-          Be_data(:,6) = round(cover_corr_data.Be10(:,3)*1000,-1);
-          Be_data(:,7) = round(cover_corr_data.Be10(:,2)*1000,-1);
+          Be_data(:,6) = round(cover_corr_data.Be10(:,2)*1000,-1);
+          Be_data(:,7) = round(cover_corr_data.Be10(:,3)*1000,-1);
       end
       if any(logical_26)
           Al_data = string(zeros(nnz(logical_26),8));
@@ -73,8 +73,8 @@ function export_coverages(sample_data,cover_corr_data,out_name,format)
           end
           Al_data(:,1) = sample_names(logical_26);
           Al_data(:,5) = round(cover_corr_data.Al26(:,1)*1000,-1);
-          Al_data(:,6) = round(cover_corr_data.Al26(:,3)*1000,-1);
-          Al_data(:,7) = round(cover_corr_data.Al26(:,2)*1000,-1);
+          Al_data(:,6) = round(cover_corr_data.Al26(:,2)*1000,-1);
+          Al_data(:,7) = round(cover_corr_data.Al26(:,3)*1000,-1);
       end
       
       if any(logical_10) && ~any(logical_26)
