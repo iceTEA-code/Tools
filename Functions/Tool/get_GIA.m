@@ -7,9 +7,9 @@
 % ICE-5G and ICE-6G global ice models (Peltier, 2004; Peltier et al., 
 % 2015). These ice models have time steps from 122 ka and 26 ka before 
 % present, respectively - the earliest model value is used prior to these 
-% times. The computed vertical deformation is then calculated relative to 
-% time-varying sea level using a sea-level model that includes global mean
-% sea level, rotational feedbacks and gravitational effects. The relative 
+% times.  The computed vertical deformation is then calculated relative to 
+% present-day elevation, including effects from time-dependent and 
+% spatially varying ocean loading and rotational feedbacks. The relative 
 % elevation is determined for each sample site by interpolating the model 
 % data in space and time.
 %
@@ -49,8 +49,8 @@ function elev_data = get_GIA(sample_data,GIA_model,time_arr)
   lat_grid = GIA_data.lat_grid;
   lon_grid = GIA_data.lon_grid;
   GIA_time = GIA_data.time;
-  elev_diff = GIA_data.elev_diff_relpastSLmodel;
-  %elev_diff = GIA_data.elev_diff; % Uncomment to instead look at effects without accounting for past SL change (vertical deformation only)
+  elev_diff = GIA_data.elev_diff;
+  %elev_diff = GIA_data.elev_diff_relpastSLmodel; % Uncomment to instead look at vertical deformation relative past sea level
   
   % Get elevations for each sample
   elevdiff_arr = cell(1,numel(sample_data.s));
