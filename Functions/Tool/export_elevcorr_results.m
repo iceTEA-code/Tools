@@ -38,7 +38,9 @@ function export_elevcorr_results(sample_data,corrected_data,out_name,format)
   latitudes = sample_data.CC(:,1);
   longitudes = sample_data.CC(:,2);
   mod_elevations = sample_data.CC(:,3);
-  sample_names = corrected_data.plot.corr.sample_names;
+  for i = 1:length(sample_data.s)
+      sample_names{i} = sample_data.s{1,i}.name;
+  end
   
   % Get correction info
   scaling_model = corrected_data.scaling_model;
