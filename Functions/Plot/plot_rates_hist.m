@@ -109,7 +109,7 @@ function out = plot_rates_hist(ages_ka,reg,transect_type,N,save_plot)
   box on;
   ax.XScale = 'linear';
   if max_rate > 1
-      xlim([0 round(reg.quant_95(2))]);
+      xlim([0 ceil(reg.quant_95(2))]);
   end
   ylabel('Frequency');
   xlabel(x_lab);
