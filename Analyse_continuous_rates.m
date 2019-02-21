@@ -40,6 +40,8 @@ load(load_name);
 
 transect_type = 'vert'; % SET as 'vert' or 'horiz'
 n_terms = []; % Set number of terms in Fourier series (1-8; default is 3). The higher the number of terms, the more sinusoidal the fit.
+              % The number of terms that can be used is dependent on the number of samples in the transect
+              %(e.g. 1 term requires at least 4 samples, 3 terms requires 8 samples, 8 terms requires 18 samples).
 mask = [];    % Select samples to analyse (leave empty for all samples; [])
 
 regressed_rates = transect_regress_fourier(ages_ka,transect_type,n_terms,mask);
