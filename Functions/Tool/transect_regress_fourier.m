@@ -26,7 +26,10 @@
 %
 % n_terms is an optional input to specify the number of terms in the
 % Fourier Series analysis, which should be a value between 1 and 8 (default
-% is 3). The higher the number of terms, the more sinusoidal the fit.
+% is 3). The higher the number of terms, the more sinusoidal the fit. The 
+% number of terms that can be used is dependent on the number of samples in
+% the transect (e.g. 1 term requires at least 4 samples, 3 terms requires 
+% 8 samples, 8 terms requires 18 samples).
 %
 % mask option can also be included to specify which samples to plot. This
 % should be based on the original input sample data. Default is to plot all
