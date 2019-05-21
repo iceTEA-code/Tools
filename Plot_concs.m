@@ -43,7 +43,7 @@ concs_name = 'GISP2_data';          % Name of dataset to be used to save figures
 
 
 % Load sample data
-sample_data = get_data_complex(input_name); 
+sample_data = get_data_complex(input_name);
 sample_data.cover.z = cover_z;
 
 % Get parameters for samples
@@ -54,6 +54,7 @@ sample_data = get_pars(sample_data,scaling_model);
 
 % Plot Settings
 sigma = 2;      % Set sigma for plotted concentrations (1 or 2)
+add_names = 0;  % Add sample names to plot?  1 = yes, 0 = no
 save_plot = 0;  % Save plot?  1 to save as .png and .eps, otherwise 0
 expo_int = [];  % Optionally set exposure intervals to be shown (ka)
 bur_int = [];   % Optionally set burial intervals to be shown (ka)
@@ -61,7 +62,7 @@ x_lim = [];     % Optionally set x-axis limits (norm. 10Be conc, atoms g)
 y_lim = [];     % Optionally set y-axis limits (norm. 26Al/10Be ratio)
 
 % Plot figure
-plot_2iso_concs(sample_data,sigma,save_plot,concs_name,expo_int,bur_int,x_lim,y_lim);
+plot_2iso_concs(sample_data,sigma,add_names,save_plot,concs_name,expo_int,bur_int,x_lim,y_lim);
 
 
 %% Plot Concentrations with Depth
