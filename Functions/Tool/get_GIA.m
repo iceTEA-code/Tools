@@ -7,17 +7,18 @@
 % ICE-5G and ICE-6G global ice models (Peltier, 2004; Peltier et al., 
 % 2015). These ice models have time steps from 122 ka and 26 ka before 
 % present, respectively - the earliest model value is used prior to these 
-% times.  The computed vertical deformation is then calculated relative to 
-% present-day elevation, including effects from time-dependent and 
-% spatially varying ocean loading and rotational feedbacks. The relative 
-% elevation is determined for each sample site by interpolating the model 
-% data in space and time.
+% times. The W12 (Antarctica only) ice model is also provided (Whitehouse 
+% et al., 2012). The computed vertical deformation is then calculated 
+% relative to present-day elevation, including effects from time-dependent 
+% and spatially varying ocean loading and rotational feedbacks. The 
+% relative elevation is determined for each sample site by interpolating 
+% the model data in space and time.
 %
 % sample_data is a struct containing necessary sample information produced 
 % using get_data.m.
 %
-% GIA_model should be either "I5G" or "I6G", corresponding to the ice model
-% used to calculate GIA (i.e. ICE-5G or ICE-6G).
+% GIA_model should be either "I5G", "I6G" or "W12", corresponding to the 
+% ice model used to calculate GIA (i.e. ICE-5G, ICE-6G or W12).
 %
 % time_arr is an array of time (present to past), created in elev_correct.m.
 %
@@ -43,8 +44,11 @@ function elev_data = get_GIA(sample_data,GIA_model,time_arr)
   elseif strcmpi(GIA_model,'I6G')
       load('i6g.mat');
       GIA_data = i6g;
+  elseif strcmpi(GIA_model,'W12')
+      load('W12.mat');
+      GIA_data = W12.model_90VM2VM2;
   else
-      error('the GIA_model for get_GIA should be "I5G" or "I6G"!');
+      error('the GIA_model for get_GIA should be "I5G", "I6G" or "W12"!');
   end
   lat_grid = GIA_data.lat_grid;
   lon_grid = GIA_data.lon_grid;
