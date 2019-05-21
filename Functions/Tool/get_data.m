@@ -63,15 +63,24 @@ function sample_data = get_data(input_name)
           strrow(a) = ~isnumeric(this_header);
       end
       n_raw_columns = numel(in_raw(1,:));
-      if (n_raw_columns > 15) && all(~strrow(16:end)) % Remove any empty columns
+      n_data_columns = numel(in_data(1,:));
+      % Remove any empty columns
+      if (n_raw_columns > 15) && all(~strrow(16:end))
+          in_raw = in_raw(:,1:15);
+      elseif (n_raw_columns > 15) && (n_data_columns < 15)
           in_raw = in_raw(:,1:15);
       elseif (n_raw_columns > 22) && all(~strrow(23:end))
           in_raw = in_raw(:,1:22);
       end
-      if all(strrow) % Remove header
+      for a = 1:length(in_raw(1,:))
+          this_header = in_raw{1,a};
+          new_strrow(a) = ~isnumeric(this_header);
+      end
+      if all(new_strrow) % Remove header
           in_raw = in_raw(2:end,:); 
           in_txt = in_txt(2:end,:);
       end
+      
   elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv')
       warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames')
       in_raw = table2cell(readtable(input_name));
@@ -171,60 +180,24 @@ function sample_data = get_data(input_name)
     
   NN = [any(logical_10) any(logical_26)];
   
-  % Determine if sample details should be combined for each nuclide measurement, and sort if necessary
-  if NN(1)
-      in_data_10.data = in_data(logical_10,:);
-      in_data_10.names = names(logical_10)';
-  else
-      in_data_10.data = [];
-  end
-  if NN(2)
-      in_data_26.data = in_data(logical_26,:);
-      in_data_26.names = names(logical_26)';
-  else
-      in_data_26.data = [];
-  end
-    
-  logical_1026 = any(logical_10' & logical_26'); % Determine whether samples have both nuclide measurements
-  
-  % Get data
-  if NN(1) && ~NN(2)
-      comb_names = in_data_10.names;
-      comb_data = in_data_10.data;
-  elseif ~NN(1) && NN(2)
-      comb_names = in_data_26.names;
-      comb_data = in_data_26.data;
-  elseif logical_1026
-      comb_names = [in_data_10.names; in_data_26.names];
-      comb_data = [in_data_10.data; in_data_26.data];
-  end
-  
-  % Calculate number of samples
-  n_comb = numel(comb_data(:,1));
-  logical_comb_10 = any(comb_data(:,Be_c),2)';
-  logical_comb_26 = any(comb_data(:,Al_c),2)';
-  if ~any(logical_comb_10) && ~any(logical_comb_26)
-      logical_comb_10 = any(comb_data(:,Be_age_c),2)';
-      logical_comb_26 = any(comb_data(:,Al_age_c),2)';
-  end
-  
-  
+
   % Collate sample details
-  for c = 1:n_comb
+  n_data = numel(in_data(:,1));
+  for c = 1:n_data
       
-      sample_data.s{c}.name = comb_names(c);
+      sample_data.s{c}.name = names(c);
       
-      if logical_comb_10(c)
+      if logical_10(c)
           sample_data.s{c}.nuclide10 = 1;
-          sample_data.s{c}.N10 = comb_data(c,Be_c);
-          sample_data.s{c}.dN10 = comb_data(c,Be_sig_c);  
+          sample_data.s{c}.N10 = in_data(c,Be_c);
+          sample_data.s{c}.dN10 = in_data(c,Be_sig_c);  
       else
           sample_data.s{c}.nuclide10 = 0;
       end
-      if logical_comb_26(c)
+      if logical_26(c)
           sample_data.s{c}.nuclide26 = 1;
-          sample_data.s{c}.N26 = comb_data(c,Al_c);
-          sample_data.s{c}.dN26 = comb_data(c,Al_sig_c);
+          sample_data.s{c}.N26 = in_data(c,Al_c);
+          sample_data.s{c}.dN26 = in_data(c,Al_sig_c);
       else
           sample_data.s{c}.nuclide26 = 0;
       end
@@ -233,19 +206,19 @@ function sample_data = get_data(input_name)
    
   
   % Assume certain sample details are unknown or zero
-  e_rate = zeros(n_comb,1); % Erosion rate (mm/kyr)
-  inh10 = zeros(n_comb,1);  % 10Be inheritance (atoms/g)
-  inh26 = zeros(n_comb,1);  % 26Al inheritance (atoms/g)
-  top_depth_gcm2 = zeros(n_comb,1); % Top depth (g/cm^2) - i.e. the surface
+  e_rate = zeros(n_data,1); % Erosion rate (mm/kyr)
+  inh10 = zeros(n_data,1);  % 10Be inheritance (atoms/g)
+  inh26 = zeros(n_data,1);  % 26Al inheritance (atoms/g)
+  top_depth_gcm2 = zeros(n_data,1); % Top depth (g/cm^2) - i.e. the surface
   
   % Initially set attenuation length to zero
-  init_L = zeros(n_comb,1);
+  init_L = zeros(n_data,1);
   
   % Combine necessary data for CronusCalc
-  sample_data.CC = [comb_data(:,[lat_c:pressure_c,thk_c:shield_c]),e_rate,comb_data(:,[Be_c,Al_c]),inh10,inh26,init_L,top_depth_gcm2,comb_data(:,year_c)];
+  sample_data.CC = [in_data(:,[lat_c:pressure_c,thk_c:shield_c]),e_rate,in_data(:,[Be_c,Al_c]),inh10,inh26,init_L,top_depth_gcm2,in_data(:,year_c)];
   
   % Determine atmospheric pressure (if unknown)
-  sample_data.CC = atm_pressure(comb_data(:,lat_c),comb_data(:,lon_c),sample_data.CC);
+  sample_data.CC = atm_pressure(in_data(:,lat_c),in_data(:,lon_c),sample_data.CC);
   
 %   % Determine attenuation lengths (g/cm^2) based on latitude (60 deg.)
 %   if (sample_data.CC(:,1) > 60) | (sample_data.CC(:,1) < -60)
@@ -254,7 +227,7 @@ function sample_data = get_data(input_name)
 %       L = init_L + 160;  % Non-polar
 %   end
 
-  % Determine attenuation lengths (g/cm^2) based on Sato model
+  % Determine attenuation lengths (g/cm^2) based on modified Sato model
   for d = 1:length(sample_data.CC(:,1))
       L(d,1) = attenuationlength(sample_data.CC(d,1),sample_data.CC(d,2),sample_data.CC(d,3),sample_data.CC(d,4));
   end
@@ -264,23 +237,23 @@ function sample_data = get_data(input_name)
   % Create uncertainties struct
   
   % Create a standard elevation uncertainty if not provided
-  for eu = 1:length(comb_data(:,elev_err_c))
-      if comb_data(eu,elev_err_c) == 0 || isnan(comb_data(eu,elev_err_c))
+  for eu = 1:length(in_data(:,elev_err_c))
+      if in_data(eu,elev_err_c) == 0 || isnan(in_data(eu,elev_err_c))
           elev_uncert(eu) = 5; % 5 metres
       else
-          elev_uncert(eu) = comb_data(eu,elev_err_c);
+          elev_uncert(eu) = in_data(eu,elev_err_c);
       end
   end
   uncert = zeros(size(sample_data.CC)); % Assume zero uncertainty for now
-  uncert(:,[9,10]) = comb_data(:,[Be_sig_c,Al_sig_c]); % Add nuclide concentration uncertainties
+  uncert(:,[9,10]) = in_data(:,[Be_sig_c,Al_sig_c]); % Add nuclide concentration uncertainties
   uncert(:,3) = elev_uncert; % Add elevation uncertainties
   
   % Determine pressure uncertainties from elevation
   upelev_uncert = uncert;  upelev_uncert(:,3) = sample_data.CC(:,elev_c) + elev_uncert';
-  upelev_uncert = atm_pressure(comb_data(:,lat_c),comb_data(:,lon_c),upelev_uncert);
+  upelev_uncert = atm_pressure(in_data(:,lat_c),in_data(:,lon_c),upelev_uncert);
   uppress_diff = sample_data.CC(:,4) - upelev_uncert(:,4);
   loelev_uncert = uncert;  loelev_uncert(:,3) = sample_data.CC(:,elev_c) - elev_uncert';
-  loelev_uncert = atm_pressure(comb_data(:,lat_c),comb_data(:,lon_c),loelev_uncert);
+  loelev_uncert = atm_pressure(in_data(:,lat_c),in_data(:,lon_c),loelev_uncert);
   lopress_diff = sample_data.CC(:,4) - loelev_uncert(:,4);
   press_uncert = mean([abs(uppress_diff),abs(lopress_diff)],2); % Get average of upper and lower pressure uncertainties
   uncert(:,4) = press_uncert;
@@ -300,11 +273,11 @@ function sample_data = get_data(input_name)
   end
   
   % Export logical of nuclides
-  sample_data.logical_10 = logical_comb_10;
-  sample_data.logical_26 = logical_comb_26;
+  sample_data.logical_10 = logical_10;
+  sample_data.logical_26 = logical_26;
   
   % Export sample position
-  sample_data.position = comb_data(:,position_c)';
+  sample_data.position = in_data(:,position_c)';
   
   % Create default cover depth
   sample_data.cover.z = 0;
