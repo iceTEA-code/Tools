@@ -64,11 +64,15 @@ function sample_data = get_data_complex(input_name)
           this_header = in_raw{1,a};
           strrow(a) = ~isnumeric(this_header);
       end
+      n_raw_columns = numel(in_raw(1,:));
+      if (n_raw_columns > 17) && all(~strrow(18:end)) % Remove any empty columns
+          in_raw = in_raw(:,1:17);
+      end
       if all(strrow) % Remove header
           in_raw = in_raw(2:end,:); 
           in_txt = in_txt(2:end,:);
       end
-      n_raw_columns = numel(in_raw(1,:));
+
   elseif strcmpi(ext,'.txt') || strcmpi(ext,'.csv')
       warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames')
       in_raw = table2cell(readtable(input_name));
@@ -86,9 +90,10 @@ function sample_data = get_data_complex(input_name)
           end
       end
       in_data = in_data(:,2:end);
-      n_raw_columns = numel(in_raw(1,:));
   end
   
+  n_raw_columns = numel(in_raw(1,:));
+  n_data_columns = numel(in_data(1,:));
   
   % Check inputs
   if (n_raw_columns > 24)
@@ -98,12 +103,16 @@ function sample_data = get_data_complex(input_name)
       error('sample input data seems to have exposure ages but fields are missing!');
   end
   
-  if (n_raw_columns > 17)
-      ages = in_data(:,17:22);
-      scaling = in_txt(:,end);
-  else
-      ages = [];
-      scaling = [];
+  % Check sample names
+  col1_nan_log = isnan(in_data(:,1)); % Check for NaNs in column 1
+  if any(col1_nan_log) && (n_data_columns == 17)
+      miss_names = cellstr(num2str(in_data(~col1_nan_log,1))); % Get and convert numeric names from in_data
+      in_txt_names = in_raw(:,1);
+      in_txt_names(~col1_nan_log,1) = miss_names; % Add missed non-numeric names to data
+      in_txt = cell(size(in_raw));
+      in_txt(1,:) = in_raw(1,:); in_txt(:,1) = in_txt_names; % Combine for new text data
+      in_data = in_data(:,2:end); % Adjust in_data (remove names column)
+      warning('some sample names are numeric... fixed.');
   end
   
   
@@ -234,7 +243,7 @@ function sample_data = get_data_complex(input_name)
          dup_s = find(duplicates_26);
          for d = 1:length(dup_s)
              s = dup_s(d);
-             sample_data.s{s}.name = sorted_10.dup_names{d};
+             sample_data.s{s}.name = sorted_26.dup_names{d};
              sample_data.s{s}.top_z = sorted_26.dup_top_z{d};
              sample_data.s{s}.bottom_z = sorted_26.dup_bottom_z{d};
              sample_data.s{s}.weight = sorted_26.dup_weight{d};
@@ -297,16 +306,6 @@ function sample_data = get_data_complex(input_name)
   uncert(:,[9,10]) = sorted_data(:,[10,12]); % Add nuclide concentration uncertainties
   sample_data.CC_uncert = uncert;
   
-  % Create ages struct
-  if ~isempty(ages)
-      if NN(1)
-          sample_data.ages.Be10 = ages(:,1:3);
-      end
-      if NN(2)
-          sample_data.ages.Al26 = ages(:,4:6);
-      end
-      sample_data.ages.scaling_model = scaling{1}; % Assume the scaling used is the same for all samples
-  end
   
   % Export logical of nuclides
   sample_data.logical_10 = logical_sorted_10;
