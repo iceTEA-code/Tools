@@ -1,8 +1,8 @@
 %
-% iso_plot = plot_2iso_concs(sample_data,sigma,save_plot)
-% iso_plot = plot_2iso_concs(sample_data,sigma,save_plot,concs_name)
-% iso_plot = plot_2iso_concs(sample_data,sigma,save_plot,concs_name,...,expo_intervals,bur_intervals)
-% iso_plot = plot_2iso_concs(sample_data,sigma,save_plot,concs_name,...,x_lim,y_lim)
+% iso_plot = plot_2iso_concs(sample_data,sigma,add_names,save_plot)
+% iso_plot = plot_2iso_concs(sample_data,sigma,add_names,save_plot,concs_name)
+% iso_plot = plot_2iso_concs(sample_data,sigma,add_names,save_plot,concs_name,...,expo_intervals,bur_intervals)
+% iso_plot = plot_2iso_concs(sample_data,sigma,add_names,save_plot,concs_name,...,x_lim,y_lim)
 %
 % Plots normalised nuclide concentrations on a two-isotope plot (26Al/10Be
 % vs 10Be).
@@ -16,6 +16,10 @@
 % sigma should be either 1 or 2. If '1' then only 1 sigma concentration
 % uncertainty is plotted, and if '2' then both 1 and 2 sigma uncertainties
 % are shown.
+%
+% add_names is a binary input to show sample names on the plot [1], or not
+% [0]. Names can only be added where samples have both Be-10 and Al-26 
+% measurements
 %
 % save_plot is a binary input to save the figure(s) in .png and .eps 
 % formats [1], or not [0].
@@ -39,29 +43,32 @@
 %
 %%
 
-function iso_plot = plot_2iso_concs(sample_data,sigma,save_plot,concs_name,expo_intervals,bur_intervals,x_lim,y_lim)
+function iso_plot = plot_2iso_concs(sample_data,sigma,add_names,save_plot,concs_name,expo_intervals,bur_intervals,x_lim,y_lim)
   
   % Check inputs
-  if (nargin < 2 || nargin > 8)
+  if (nargin < 2 || nargin > 9)
       error('plot_2iso_concs has wrong number of inputs!');
   end
   
   if (~sigma == 1 || ~sigma == 2)
       error('sigma should be 1 or 2!');
   end
-  if (nargin < 3 || isempty(save_plot))
+  if (nargin < 3 || isempty(add_names))
+      add_names = 0;
+  end
+  if (nargin < 4 || isempty(save_plot))
       save_plot = 0;
   end
-  if save_plot == 1 && (nargin < 4 || isempty(concs_name))
+  if save_plot == 1 && (nargin < 5 || isempty(concs_name))
       error('plot_2iso_concs requires concs_name to save the figure');
   end
   
-  if ((nargin == 5 || nargin == 7) && ~isempty(expo_intervals))
+  if (nargin > 5  && ~isempty(expo_intervals))
       expo_int = expo_intervals;
   else
       expo_int = [5,10,25,50,100,250,500,1000,2000,10000]; % Default exposure intervals to be shown (ka)
   end
-  if ((nargin == 5 || nargin == 7) && ~isempty(bur_intervals))
+  if (nargin > 5 && ~isempty(bur_intervals))
       bur_int = bur_intervals;
   else
       bur_int = 300:300:1500; % Default burial intervals to be shown (ka)
@@ -180,7 +187,7 @@ function iso_plot = plot_2iso_concs(sample_data,sigma,save_plot,concs_name,expo_
   
   
   % Adjust axes
-  if ((nargin == 6 || nargin == 8) && ~isempty(y_lim))
+  if ((nargin == 7 || nargin == 9) && ~isempty(y_lim))
       ylim(y_lim);
   else
       if a1.YLim(1) < 0.4 && a1.YLim(2) > 1
@@ -193,7 +200,7 @@ function iso_plot = plot_2iso_concs(sample_data,sigma,save_plot,concs_name,expo_
           ylim([0.4,1.05]);
       end
   end
-  if ((nargin == 5 || nargin == 7) && ~isempty(x_lim))
+  if ((nargin == 7 || nargin == 9) && ~isempty(x_lim))
       xlim(x_lim);
   else
       xlim([2e3,3e6]);
@@ -202,6 +209,12 @@ function iso_plot = plot_2iso_concs(sample_data,sigma,save_plot,concs_name,expo_
   xlabel('^{10}Be ^* (years)')
   ylabel('^{26}Al ^* / ^{10}Be ^*')
   box on;
+  
+  
+  % Add sample names to plot
+  if add_names == 1
+     add_names_2iso(sample_data); 
+  end
   
   
   % Save figure
