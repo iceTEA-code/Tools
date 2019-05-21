@@ -190,7 +190,7 @@ end
     
     % MODIFICATION
     % Create the elevation vector
-    elevation_tv = interp1(elev_time,elev_vals,tv); % Interpolate elevations for tv times
+    elevation_tv = interp1(elev_time,elev_vals,tv,'linear','extrap'); % Interpolate elevations for tv times
     
     % Convert elevation to pressure
     if sample.lat < -60 % Antarctica-only
@@ -198,8 +198,6 @@ end
     else % Elsewhere; Computed from ERA-40 reanalysis data
         pressure_tv = ERA40atm(sample.lat,sample.long,elevation_tv);
     end
-    pressure_nan = isnan(pressure_tv); % Find any NaNs
-    pressure_tv(pressure_nan) = 0;
     
     % Do the age calculation. Interestingly, because all of the P(t)
     % functions are defined piecewise constant, it's not necessary to have
@@ -264,6 +262,7 @@ if (strcmpi(sample.scaling,'de') || strcmpi(sample.scaling,'all'))
 end
 
 out.tv=tv;
+out.elevation = elevation_tv;
 out.pressure = pressure_tv;
 
 end

@@ -42,9 +42,9 @@ function out = elev_correct(sample_data,scaling_model,correction_type,elev_input
   if (strcmpi(correction_type,'rate') && length(elev_input) ~= 1)
       error('the elev_input for correction_type "rate" should be a single value (m/ka)!');
   end
-  if strcmpi(correction_type,'model') && (~strcmpi(elev_input,'I5G') && ~strcmpi(elev_input,'I6G'))
-      error('the elev_input for correction_type "model" should be "I5G" or "I6G"!');
-  end
+%   if strcmpi(correction_type,'model') && (~strcmpi(elev_input,'I5G') && ~strcmpi(elev_input,'I6G'))
+%       error('the elev_input for correction_type "model" should be "I5G" or "I6G"!');
+%   end
   if strcmpi(scaling_model,'LSD')
       scaling = 'SF';
   elseif strcmpi(scaling_model,'LSDn')
@@ -164,12 +164,12 @@ end
       else
           elev_arr(1,:) = s_data(3) + elev_data.elev_change;
           
-          elev_arr_NaN = elev_arr < 0;
-          elev_arr(elev_arr_NaN) = NaN; % Make elevations below zero NaNs
+%           elev_arr_NaN = elev_arr < 0;
+%           elev_arr(elev_arr_NaN) = NaN; % Make elevations below zero NaNs
       end
       
       % Get parameters, scaling factors and ages
-      [uncorr_mean_SF,corr_mean_SF,uncorr_mean_age,corr_mean_age,uncorr_times,uncorr_prod,corr_times,corr_prod] = get_fac_par_age(s_data,elev_data.time_arr,elev_arr,scaling_model,pp,nuclide,1);
+      [uncorr_mean_SF,corr_mean_SF,uncorr_mean_age,corr_mean_age,uncorr_times,uncorr_prod,corr_times,corr_prod,time_initSL] = get_fac_par_age(s_data,elev_data.time_arr,elev_arr,scaling_model,pp,nuclide,1);
       
       
       % Compute for uncertainties
@@ -202,7 +202,7 @@ end
               end
               
               % Get parameters, scaling factors and ages for uncertainties
-              [uncorr_delta_SF,corr_delta_SF,uncorr_delta_age,corr_delta_age,~,~,~,~] = get_fac_par_age(delta_s_data,elev_data.time_arr,delta_elev_arr,scaling_model,pp,nuclide,0);
+              [uncorr_delta_SF,corr_delta_SF,uncorr_delta_age,corr_delta_age,~,~,~,~,~] = get_fac_par_age(delta_s_data,elev_data.time_arr,delta_elev_arr,scaling_model,pp,nuclide,0);
               d_aged = (corr_delta_age-corr_mean_age) / (this_delta);
               derivs(mask_idx) = d_aged;
               if (~isnan(s_data_uncert(mask_idx)))
@@ -215,12 +215,12 @@ end
       delta_pp = pp;
       if nuclide == 10
           delta_pp.PsBe = pp.PsBe+0.01*abs(pp.PsBe);
-          [uncorr_deltapp_SF,corr_deltapp_SF,uncorr_deltapp_age,corr_deltapp_age,~,~,~,~] = get_fac_par_age(s_data,elev_data.time_arr,elev_arr,scaling_model,delta_pp,nuclide,0);
+          [uncorr_deltapp_SF,corr_deltapp_SF,uncorr_deltapp_age,corr_deltapp_age,~,~,~,~,~] = get_fac_par_age(s_data,elev_data.time_arr,elev_arr,scaling_model,delta_pp,nuclide,0);
           d_aged_ps = (corr_deltapp_age-corr_mean_age) / (0.01*abs(pp.PsBe));
           corr_age_uncert_ext = corr_age_uncert + (d_aged_ps^2*pp.sigmaPsBe^2);
       elseif nuclide == 26
           delta_pp.PsAl = pp.PsAl+0.01*abs(pp.PsAl);
-          [uncorr_deltapp_SF,corr_deltapp_SF,uncorr_deltapp_age,corr_deltapp_age,~,~,~,~] = get_fac_par_age(s_data,elev_data.time_arr,elev_arr,scaling_model,delta_pp,nuclide,0);
+          [uncorr_deltapp_SF,corr_deltapp_SF,uncorr_deltapp_age,corr_deltapp_age,~,~,~,~,~] = get_fac_par_age(s_data,elev_data.time_arr,elev_arr,scaling_model,delta_pp,nuclide,0);
           d_aged_ps = (corr_deltapp_age-corr_mean_age) / (0.01*abs(pp.PsAl));
           corr_age_uncert_ext = corr_age_uncert + (d_aged_ps^2*pp.sigmaPsAl^2);
       end
@@ -228,7 +228,7 @@ end
       % Take the square root of uncertainty to get a standard deviation
       corr_age_uncert_int = sqrt(corr_age_uncert); % Internal uncertainty (analytical only)
       corr_age_uncert_ext = sqrt(corr_age_uncert_ext); % External/total uncertainty
-      
+        
       
       % Calculate the mean age difference
       age_diff = corr_mean_age - uncorr_mean_age;
@@ -274,6 +274,9 @@ end
       elseif age_diff > 0
           disp(['  ' sprintf('%0.1f',abs(age_diff)) ' ka (' sprintf('%0.0f',abs(per_age_diff)) '%) older than the mean uncorrected age.']);
       end
+      if (time_initSL < corr_mean_age) % Check whether mean age occurred when below sea level
+          disp(['  Warning: sample was below sea level at time of exposure (first exposed above sea level at ' sprintf('%0.1f',time_initSL) ' ka).'])
+      end
       
   end
 
@@ -282,7 +285,7 @@ end
   
   %%%%%%%%%%%%%% Compute scaling factors, parameters and age %%%%%%%%%%%%%%
   
-  function [uncorr_SF,corr_SF,uncorr_age,corr_age,uncorr_times,uncorr_prod,corr_times,corr_prod] = get_fac_par_age(s_data,time_arr,elev_arr,scaling_model,pp,nuclide,mean_or_not)
+  function [uncorr_SF,corr_SF,uncorr_age,corr_age,uncorr_times,uncorr_prod,corr_times,corr_prod,time_initSL] = get_fac_par_age(s_data,time_arr,elev_arr,scaling_model,pp,nuclide,mean_or_not)
   
   % Compute parameters
   
@@ -328,15 +331,20 @@ end
   tdsf_corr = get_tdsf_elev(tdsfsample,pmag_consts,time_arr,elev_arr);
   
   if strcmpi(scaling_model,'st')
+      negSF_log = tdsf_corr.SF_St<0; tdsf_corr.SF_St(negSF_log) = tdsf_corr.SF_St(find(tdsf_corr.SF_St<0,1,'first')-1);
       corr_SF = tdsf_corr.SF_St;
   elseif strcmpi(scaling_model,'du')
+      negSF_log = tdsf_corr.SF_Du<0; tdsf_corr.SF_Du(negSF_log) = tdsf_corr.SF_Du(find(tdsf_corr.SF_Du<0,1,'first')-1);
       corr_SF = tdsf_corr.SF_Du;
   elseif strcmpi(scaling_model,'de')
+      negSF_log = tdsf_corr.SF_De<0; tdsf_corr.SF_De(negSF_log) = tdsf_corr.SF_De(find(tdsf_corr.SF_De<0,1,'first')-1);
       corr_SF = tdsf_corr.SF_De;
   elseif strcmpi(scaling_model,'li')
+      negSF_log = tdsf_corr.SF_Li<0; tdsf_corr.SF_Li(negSF_log) = tdsf_corr.SF_Li(find(tdsf_corr.SF_Li<0,1,'first')-1);
       corr_SF = tdsf_corr.SF_Li;
   elseif strcmpi(scaling_model,'lm')
-      corr_SF = tdsf_corr.SF_Lm;
+      negSF_log = tdsf_corr.SF_Lm<0; tdsf_corr.SF_Lm(negSF_log) = tdsf_corr.SF_Lm(find(tdsf_corr.SF_Lm<0,1,'first')-1);
+      corr_SF = tdsf_corr.SF_Lm;      
   elseif strcmpi(scaling_model,'sf') || strcmpi(scaling_model,'LSD')
       corr_SF = tdsf_corr.SF_Sf;
   elseif strcmpi(scaling_model,'sa') || strcmpi(scaling_model,'LSDn')
@@ -356,6 +364,8 @@ end
       end
   end
   
+  time_initSL = tdsf_corr.tv(find(tdsf_corr.elevation<0,1,'first')-1)/1000; % Find time that sample was initially exposed above sea level
+  
   
   % Compute ages
   if nuclide == 10
@@ -370,12 +380,12 @@ end
           uncorr_times = NaN;
           uncorr_prod = NaN;
       end
-      corr_sf = sf; corr_sf.tdsf = tdsf_corr; corr_sf.P = mean(tdsf_corr.pressure,'omitnan'); % Add new time-dependent scaling factor and pressure
+      corr_sf = sf; corr_sf.tdsf = tdsf_corr; corr_sf.P = tdsf_corr.pressure(1); % Add new time-dependent scaling factor and pressure
       corr_cp = comppars1026(pp,sp,corr_sf,max_depth); % Compute parameters (including muon scaling)
       try
           corr_raw = computeage10(pp,sp,corr_sf,corr_cp,scaling_model); % Calculate corrected
       catch
-          error('The sample elevation is below sea level at age of sample. Use a smaller rate of elevation change.');
+          error('Rate of elevation change to high for this sample.');
       end
       corr_age = corr_raw(1);
       sf.currentsf = getcurrentsf(sf,0,scaling_model,'be'); % Get contemporary surface production rates (atoms/g)
@@ -394,12 +404,12 @@ end
           uncorr_times = NaN;
           uncorr_prod = NaN;
       end
-      corr_sf = sf; corr_sf.tdsf = tdsf_corr; corr_sf.P = mean(tdsf_corr.pressure,'omitnan'); % Add new time-dependent scaling factor and pressure
+      corr_sf = sf; corr_sf.tdsf = tdsf_corr; corr_sf.P = tdsf_corr.pressure(1); % Add new time-dependent scaling factor and pressure
       corr_cp = comppars1026(pp,sp,corr_sf,max_depth); % Compute parameters (including muon scaling)
       try
           corr_raw = computeage26(pp,sp,corr_sf,corr_cp,scaling_model); % Calculate corrected
       catch
-          error('the sample elevation is below sea level at age of sample. Use a smaller rate of elevation change.');
+          error('Rate of elevation change to high for this sample.');
       end
       corr_age = corr_raw(1);
       sf.currentsf = getcurrentsf(sf,0,scaling_model,'al'); % Get contemporary surface production rates (atoms/g)
