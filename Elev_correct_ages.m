@@ -50,7 +50,7 @@ scaling_model = 'LSD';      % 'DE','DU','LI','ST','LM','LSD','LSDn'
 
 % SET elevation correction
 correction_type = 'model';  % Select 'model' or 'rate'
-GIA_model = 'W12';         % If 'model', set GIA model to use - 'I5G', 'I6G' or 'W12'(Antarctica only)
+GIA_model = 'I6G';         % If 'model', set GIA model to use - 'I5G', 'I6G' or 'W12'(Antarctica only)
 elev_rate = 2;             % If 'rate', set rate of elevation change (m/ka) - 
                            % A positive/negative value would correspond to lower/higher elevations in the past (uplift/subsidence)
 
