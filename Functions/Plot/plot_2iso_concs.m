@@ -43,7 +43,7 @@
 %
 %%
 
-function iso_plot = plot_2iso_concs(sample_data,sigma,add_names,save_plot,concs_name,expo_intervals,bur_intervals,x_lim,y_lim)
+function [iso_plot,sample_data] = plot_2iso_concs(sample_data,sigma,add_names,save_plot,concs_name,expo_intervals,bur_intervals,x_lim,y_lim)
   
   % Check inputs
   if (nargin < 2 || nargin > 9)
