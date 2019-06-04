@@ -1,8 +1,8 @@
 %
-% iso_plot = plot_2iso_concs(sample_data,sigma,add_names,save_plot)
-% iso_plot = plot_2iso_concs(sample_data,sigma,add_names,save_plot,concs_name)
-% iso_plot = plot_2iso_concs(sample_data,sigma,add_names,save_plot,concs_name,...,expo_intervals,bur_intervals)
-% iso_plot = plot_2iso_concs(sample_data,sigma,add_names,save_plot,concs_name,...,x_lim,y_lim)
+% [iso_plot,sample_data] = plot_2iso_concs(sample_data,sigma,add_names,save_plot)
+% [iso_plot,sample_data] = plot_2iso_concs(sample_data,sigma,add_names,save_plot,concs_name)
+% [iso_plot,sample_data] = plot_2iso_concs(sample_data,sigma,add_names,save_plot,concs_name,...,expo_intervals,bur_intervals)
+% [iso_plot,sample_data] = plot_2iso_concs(sample_data,sigma,add_names,save_plot,concs_name,...,x_lim,y_lim)
 %
 % Plots normalised nuclide concentrations on a two-isotope plot (26Al/10Be
 % vs 10Be).
@@ -34,7 +34,9 @@
 % x_lim and y_lim set the limits for the x-axis and y-axis ([lower upper]).
 % If empty, then defaults are used.
 %
-% The figure (fig) and axes (ax) handles are exported as an output.
+% The figure (fig) and axes (ax) handles are exported as the output, 
+% iso_plot, as well as the updated sample_data that includes the production
+% rates used to normalise the concentrations.
 %
 % Written by Richard Selwyn Jones, Durham University
 % richard.s.jones@durham.ac.uk
