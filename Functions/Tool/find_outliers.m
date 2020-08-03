@@ -57,6 +57,7 @@ function new_ages_ka = find_outliers(ages_ka,feature,sig)
           max_outliers = numel(ages_m)-1; % Maximum number of outliers returned from the gESD test
           idx = gESDtest(ages_m,sig,max_outliers);
           outliers = ages_m(idx);
+          outlier_names = sample_names(idx);
           
           ages(idx,:) = NaN; % Remove outliers from existing exposure age data
           
@@ -66,7 +67,7 @@ function new_ages_ka = find_outliers(ages_ka,feature,sig)
           if ~isempty(outliers)
               disp('Outliers (Be-10):');
               for a = 1:length(outliers)
-                  name = cellstr(sample_names(a));
+                  name = cellstr(outlier_names(a));
                   disp(['sample ' name{1} ' (mean of ' sprintf('%0.2f',outliers(a)) ' ka)']);
               end
           else
@@ -83,6 +84,7 @@ function new_ages_ka = find_outliers(ages_ka,feature,sig)
           max_outliers = numel(ages_m)-1; % Maximum number of outliers returned from the ESD test
           idx = gESDtest(ages_m,sig,max_outliers);
           outliers = ages_m(idx);
+          outlier_names = sample_names(idx);
 
           ages(idx,:) = NaN; % Remove outliers from existing exposure age data
 
@@ -92,7 +94,7 @@ function new_ages_ka = find_outliers(ages_ka,feature,sig)
           if ~isempty(outliers)
               disp('Outliers (Al-26):');
               for a = 1:length(outliers)
-                  name = cellstr(sample_names(a));
+                  name = cellstr(outlier_names(a));
                   disp(['sample ' name{1} ' (mean of ' sprintf('%0.2f',outliers(a)) ' ka)']);
               end
           else
